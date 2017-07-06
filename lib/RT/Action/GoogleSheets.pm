@@ -247,8 +247,12 @@ sub Prepare {
 
     my $token = load_token($account_name); # Token may be expired
     unless ($token) {
-        return 0 
-            unless (check_json_file($self->{config}->{GoogleServiceAccounts}->{$account_name}->{json_file}));
+        unless ($config->{UnsecuredJsonFile})
+        {
+            return 0
+                unless (check_json_file($self->{config}->{GoogleServiceAccounts}->{$account_name}->{json_file}));
+        }
+        
         RT::Logger->info(
             "[RT::Extension::GSuite]: Service account '$account_name' not logged in yet, login will be performed"
         );

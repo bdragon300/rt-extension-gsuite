@@ -15,11 +15,25 @@ our $PACKAGE = __PACKAGE__;
 
 =head1 NAME
 
-RT::Extension::GSuite - Working with Google GSuite services from the Request Tracker
+RT::Extension::GSuite - Google GSuite services for the Request Tracker
 
 =head1 DESCRIPTION
 
-TODO
+The extension allows to work with Google GSuite products from Request Tracker
+Scrips. Uses Google API v4 with JWT authorization (Google Service Account).
+
+Work approach: create Scrip, that runs Action from this extension
+(GoogleSheet for example) and write Template, which contains work logic. Set
+config headers inside Template. When Template code executes, it's standart 
+context complements by API object variables ($Sheet for example) through which
+you can work with API or raw data if you want only read/write smth for example.
+
+See appropriate modules docs.
+
+The extension supports many service accounts with their json files. Authorization
+uses JSON Web Token when Google doesn't confirm user to access requested
+priviledges. Google recommends this method for Server-to-Server communication
+without user participation. More: https://developers.google.com/identity/protocols/OAuth2
 
 =head1 INSTALLATION
 
@@ -33,17 +47,9 @@ TODO
 
 May need root permissions
 
-=item Edit your RT_SiteConfig.pm
+=item Add line to your RT_SiteConfig.pm
 
-If you are using RT 4.2 or greater, add this line:
-
-    Plugin('RT::Extension::RejectUpdate');
-
-For RT 3.8 and 4.0, add this line:
-
-    Set(@Plugins, qw(RT::Extension::RejectUpdate));
-
-or add C<RT::Extension::RejectUpdate> to your existing C<@Plugins> line.
+    Plugin('RT::Extension::GSuite');
 
 =item Restart your webserver
 
@@ -69,29 +75,23 @@ Request Tracker (RT) is Copyright Best Practical Solutions, LLC.
 
 =cut
 
-=head1 ATTRIBUTES
 
-=head2 $available_fields
-
-Hash that describes available fields (besides CustomFields) that can be set by
-user in "old state" and "checking fields" sections in configuration. 
-<Displaying name> => <%ARGS key> 
-Some of these fields are building dynamically such as Transaction.Type
-
-=cut
-
+# name => token_hash
+# each token hash keys -- see RT::Extension::GSuite::JWTAuth docs
 our %tokens = ();
 
+
+=head1 METHODS
 
 =head2 load_config
 
 Reads extension config
 
-Receives
+Parameters:
 
 None
 
-Returns
+Returns:
 
 =over
 
@@ -115,50 +115,99 @@ sub load_config
 }
 
 
+=head2 check_json_file(json_file)
+
+Checks key json file permissions. Writes msg to the log
+
+Parameters:
+
+=over
+
+=item json_file - key json file name
+
+=back
+
+Returns:
+
+1 on success, undef on fail
+
+=cut
 
 sub check_json_file {
     my ($json_file, $config) = @_;
 
-    # Ensure that json file secured
-    unless ($config->{UnsecuredJsonFile}) {
-        my $check_perms = 0400;
-        my $rt_uid = $>;
+    my $rt_uid = $>; # Effective uid
 
-        if ( ! -r $json_file) {
-            RT::Logger->error(sprintf(
-                "[RT::Extension::GSuite]: Cannot read file '%s'. Make sure it readable by RT user with uid %s",
-                $json_file, $rt_uid
-            ));
-            return (undef);
-        }
+    if ( ! -r $json_file) {
+        RT::Logger->error(sprintf(
+            "[RT::Extension::GSuite]: Cannot read file '%s'. Make sure it readable by RT user with uid %s",
+            $json_file, $rt_uid
+        ));
+        return (undef);
+    }
 
-        my @stat = stat($json_file);
-        if ($stat[4] != $rt_uid) {
-            RT::Logger->error(sprintf(
-                "[RT::Extension::GSuite]: Wrong owner uid %s on file %s. Fix it by command: chown %s '%s'",
-                $stat[4], $json_file, $rt_uid, $json_file
-            ));
-            return (undef);
-        }
-        if (($stat[2] & 0777) != $check_perms) {
-            RT::Logger->error(sprintf(
-                "[RT::Extension::GSuite]: Insecure permissions %03o on file %s. Fix it by command: chmod %03o '%s'",
-                $stat[2] & 0777, $json_file, $check_perms, $json_file
-            ));
-            return (undef);
-        }
+    # Ensure that json file is secure
+    my $check_perms = 0400; # r--------
+    my @stat = stat($json_file);
+    if ($stat[4] != $rt_uid) {
+        RT::Logger->error(sprintf(
+            "[RT::Extension::GSuite]: Wrong owner uid %s on file %s. Fix it by command: chown %s '%s'",
+            $stat[4], $json_file, $rt_uid, $json_file
+        ));
+        return (undef);
+    }
+    if (($stat[2] & 0777) != $check_perms) {
+        RT::Logger->error(sprintf(
+            "[RT::Extension::GSuite]: Insecure permissions %03o on file %s. Fix it by command: chmod %03o '%s'",
+            $stat[2] & 0777, $json_file, $check_perms, $json_file
+        ));
+        return (undef);
     }
 
     return 1;
 }
 
 
+=head2 load_token(name)
+
+Loads cached token by account name
+
+Parameters:
+
+=over
+
+=item name - service account name
+
+=back
+
+Returns:
+
+token HASHREF, undef if not found
+
+=cut
+
 sub load_token {
     my $name = shift;
-    # FIXME: make tokens hash storable permanently
+    # FIXME: make tokens hash storable permanently, %tokens is useless now
     return $tokens{$name};
 }
 
+
+=head2 store_token(name, token)
+
+Writes token to the cache
+
+Parameters:
+
+=over
+
+=item name - service account name
+
+=item token - token HASHREF
+
+=back
+
+=cut
 
 sub store_token {
     my ($account, $token) = @_;
