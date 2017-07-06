@@ -20,16 +20,16 @@ C<RT::Action::GoogleSheets> - Interact with Google Sheets
 =head2 Summary
 
 This action is intended to work with Google Sheets spreadsheet. The passed 
-template sets up parameters of work. Parameters are set by template headers.
-The Action uses Google Service Accounts 
-(L<https://developers.google.com/identity/protocols/OAuth2ServiceAccount>) so 
-you need to create such account and download .json file. Then edit your 
-RT_SiteConfig.pm to add account (see below).
+template sets up parameters of work by headers. Also all interact logic places
+into template code.
 
-You simply specify cells, e.g. "A1:B4" and their values will be loaded to the
-$$Cells variable. Similarly you can specify another range, e.g. "C4:C20", 
-put values into $$Cells inside template code and spreadsheet will be 
-updated by Action afterwards. (Always use this variable with $$ before name)
+You can work with spreadsheet in two ways: simple and complex. 
+
+Simple: you specify cells by a header, e.g. "X-Read-Cells: A1:B4" and their 
+values will be loaded to the $$Cells variable. Similarly you can specify another
+range, e.g. "X-Write-Cells: C4:C20", put values into $$Cells inside template 
+code and spreadsheet will be updated by Action afterwards. (Always use this 
+variable with $$ before name).
 
 If you want implement more complex behavior, you can manipulate already 
 preloaded spreadsheet object via $Sheet variable.
@@ -38,17 +38,17 @@ preloaded spreadsheet object via $Sheet variable.
 
 =over
 
-=item * builds context contains JWT auth, request objects and initialized 
+=item * build context contains JWT auth, request objects and initialized 
 Spreadsheet object (headers from passed templates will be used for configuration). 
 Authorization will be performed if necessary;
 
-=item * if X-Read-Cells template header is specified, then loads appropriate cell 
-values from the spreadsheet and puts them to $$Cells template variable
+=item * if X-Read-Cells template header is specified, load appropriate cell 
+values from the spreadsheet and put result to $$Cells variable
 
-=item * performs template parsing process (RT parses and executes code inside)
+=item * perform template parsing process (RT parses and executes code itself)
 
-=item * if X-Write-Cells template header is specified, then writes $$Cells 
-template variable data to appropriate cells in the spreadsheet
+=item * if X-Write-Cells template header is specified, write $$Cells variable 
+data to the appropriate cells in the spreadsheet
 
 =back
 
