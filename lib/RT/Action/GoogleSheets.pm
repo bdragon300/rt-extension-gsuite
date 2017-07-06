@@ -312,8 +312,6 @@ sub Commit {
     return 0 unless ($res);
 
     # X-Write-Cells
-    use Data::Dumper qw(Dumper);
-    RT::Logger->error(Dumper $cellsref);
     if ($range = $self->{tpl_headers}->{'X-Write-Cells'}) {
         my $res = $self->{sheet}->SetCells($range, $cellsref);
         return 0 unless ($res->is_success);
