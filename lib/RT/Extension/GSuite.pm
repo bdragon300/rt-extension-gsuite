@@ -45,7 +45,10 @@ without user participation. More: https://developers.google.com/identity/protoco
 
 =item C<make install>
 
-=item Apply initialdata if needed C<sbin/rt-setup-database --action insert --datafile /extension_destribution/etc/initialdata>
+=item Apply initialdata if needed C<make initdb>
+
+Be careful, run the last command one time only, otherwise you can get duplicates
+in the database.
 
 May need root permissions
 
