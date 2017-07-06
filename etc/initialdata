@@ -1,0 +1,12 @@
+use strict;
+use warnings;
+
+our @ScripActions = (
+{
+    Name => 'GoogleSheets',
+    Description => 'Working with Google Sheets service',
+    ExecModule => 'GoogleSheets'
+}
+);
+
+1;

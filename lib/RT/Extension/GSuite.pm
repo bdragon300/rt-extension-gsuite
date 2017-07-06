@@ -45,6 +45,8 @@ without user participation. More: https://developers.google.com/identity/protoco
 
 =item C<make install>
 
+=item Apply initialdata if needed C<sbin/rt-setup-database --action insert --datafile /extension_destribution/etc/initialdata>
+
 May need root permissions
 
 =item Add line to your RT_SiteConfig.pm
