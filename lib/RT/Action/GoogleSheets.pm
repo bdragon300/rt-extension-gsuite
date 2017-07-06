@@ -247,7 +247,7 @@ sub Prepare {
 
     my $token = load_token($account_name); # Token may be expired
     unless ($token) {
-        unless ($config->{UnsecuredJsonFile})
+        unless ($config->{InsecureJsonFile})
         {
             return 0
                 unless (check_json_file($self->{config}->{GoogleServiceAccounts}->{$account_name}->{json_file}));

@@ -109,7 +109,7 @@ sub load_config
 {
     my %conf = (
        GoogleServiceAccounts => RT->Config->Get('GoogleServiceAccounts'),
-       UnsecuredJsonFile => RT->Config->Get('UnsecuredJsonFile') // 0,
+       InsecureJsonFile => RT->Config->Get('InsecureJsonFile') // 0,
     );
     return (undef) if (scalar(grep { ! defined $_ } values %conf));
     return (undef) if ref($conf{'GoogleServiceAccounts'}) ne 'HASH';
