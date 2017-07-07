@@ -20,7 +20,7 @@ RT::Extension::GSuite - Google GSuite services for the Request Tracker
 =head1 DESCRIPTION
 
 The extension allows to work with Google GSuite products from Request Tracker
-Scrips. Uses Google API v4 with JWT authorization (Google Service Account).
+Scrips. Uses Google API v4 with OAuth2 JWT authorization (Google Service Account).
 
 Work approach: create Scrip, that runs Action from this extension
 (GoogleSheet for example) and write Template, which contains work logic. Set
