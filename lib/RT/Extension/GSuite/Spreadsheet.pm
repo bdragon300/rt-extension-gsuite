@@ -177,7 +177,7 @@ api option is set), empty list otherwise
 
 See also:
 
-https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/get
+https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/update
 
 https://developers.google.com/sheets/api/guides/concepts#a1_notation
 
@@ -272,7 +272,7 @@ sub GetCell {
 }
 
 
-=head2 SetCell(addr, API_OPTIONS)
+=head2 SetCell(addr, value, API_OPTIONS)
 
 Returns value of one cell in given address in the spreadsheet
 
