@@ -169,7 +169,7 @@ sub request {
     
     if ( ! $res) {
         RT::Logger->error(sprintf(
-            '[RT::Extension::GSuite]: failure %s %s %s', 
+            '[RT::Extension::GSuite]: failure %s %s, %s', 
             $method, $url, Dumper($content//'{no content}')
         ));
         return;
@@ -179,8 +179,8 @@ sub request {
             return wantarray ? ($res_content, $res) : $res_content;
         } else {
             RT::Logger->error(sprintf(
-                '[RT::Extension::GSuite]: failure %s %s %s: %s', 
-                $method, $url, Dumper($content//'{no content}'), $res->status_line
+                '[RT::Extension::GSuite]: failure %s %s, %s => %s, %s', 
+                $method, $url, Dumper($content//'{no content}'), $res->status_line, $res->content
             ));
             return wantarray ? ('', $res) : '';
         }
