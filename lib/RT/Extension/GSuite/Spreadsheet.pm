@@ -270,7 +270,8 @@ sub GetCell {
     }
 
     my @vals = $self->GetCells($addr, %api_args);
-    return $vals[0];
+    return '' unless scalar(@vals); # Empty response
+    return (ref $vals[0] eq 'ARRAY') ? $vals[0][0] : (undef); # Response or error
 }
 
 
@@ -317,7 +318,8 @@ sub SetCell {
     }
 
     my @vals = $self->SetCells($addr, [[$value]], %api_args);
-    return (scalar(@vals) == 0) ? '' : $vals[0];
+    return '' unless scalar(@vals); # No response
+    return (ref $vals[0] eq 'ARRAY') ? $vals[0][0] : (undef); # Response or error
 }
 
 
