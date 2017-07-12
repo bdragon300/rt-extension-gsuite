@@ -317,7 +317,7 @@ sub SetCell {
     }
 
     my @vals = $self->SetCells($addr, [[$value]], %api_args);
-    return (scalar(@vals) == 0) ? '' : $vals[0];
+    return (scalar(@vals) == 0) ? '' : $vals[0][0];
 }
 
 
