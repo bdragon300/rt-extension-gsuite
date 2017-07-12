@@ -96,7 +96,7 @@ Returns:
 
 =over
 
-=item In list context returns obtained cell values as array or undef on error
+=item In list context returns obtained cell values as array
 
 =item In scalar context returns Furl::Response object
 
@@ -136,10 +136,10 @@ sub GetCells {
         GET => $url
     );
 
-    my $vals = [undef];
+    my $vals = [];
     if ($res->is_success) {
         if (ref $content eq 'HASH') {
-            $vals = $content->{'values'} // [undef];
+            $vals = $content->{'values'} // [];
         }
     }
 
@@ -169,7 +169,7 @@ Returns:
 =over
 
 =item In list context returns obtained cell values as array (if includeValuesInResponse
-api option is set), empty list otherwise or undef on error
+api option is set), empty list otherwise
 
 =item In scalar context returns Furl::Response object
 
@@ -220,12 +220,10 @@ sub SetCells {
         $request_body
     );
 
-    my $vals = [undef];
-
+    my $vals = [];
     if ($res->is_success) {
         if (ref $content eq 'HASH') {
-            $vals = $content->{'updatedData'}->{'values'} 
-                // ($api_args{includeValuesInResponse} ? [undef] : []);
+            $vals = $content->{'updatedData'}->{'values'} // [];
         }
     }
 
@@ -249,7 +247,7 @@ Parameters:
 
 Returns:
 
-Cell value or undef on error
+Cell value or undef
 
 =cut
 
@@ -270,8 +268,7 @@ sub GetCell {
     }
 
     my @vals = $self->GetCells($addr, %api_args);
-    return '' unless scalar(@vals); # Empty response
-    return (ref $vals[0] eq 'ARRAY') ? $vals[0][0] : (undef); # Response or error
+    return @vals ? $vals[0][0] : (undef);
 }
 
 
@@ -318,8 +315,7 @@ sub SetCell {
     }
 
     my @vals = $self->SetCells($addr, [[$value]], %api_args);
-    return '' unless scalar(@vals); # No response
-    return (ref $vals[0] eq 'ARRAY') ? $vals[0][0] : (undef); # Response or error
+    return @vals ? $vals[0][0] : (undef);
 }
 
 
