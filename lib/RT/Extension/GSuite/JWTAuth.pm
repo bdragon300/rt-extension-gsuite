@@ -157,48 +157,27 @@ sub _generate_token {
     );
 
     $args{set_iat} //= 1;
-    $args{scopes} = Mojo::Collection->new( @{$args{scopes}} );
+    $args{scopes} = Mojo::Collection->new( @{$args{scopes}} )
+        if (ref $args{scopes} eq 'ARRAY');
 
     my $jwt = Mojo::JWT::Google->new(%args);
     $jwt->expires($jwt->now + 300);
 
     # Send JWT and expect token
-    my $req = Furl->new();
-    my $params = [
-        approval_prompt => 'force',
-        grant_type => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-        assertion => $jwt->encode
-    ];
-    my $res = $req->post(
-        $args{target},
-        [],
-        $params
-    );
+    my $res = $self->_request($args{target}, $jwt->encode);
     unless ($res->is_success) {
         RT::Logger->error(
             sprintf "[RT::Extension::GSuite]: Error while request access_token: %d %s: %s", 
             $res->code, $res->message,  $res->content
         );
+        return 0;
     }
 
     # Deserialize JSON response
-    my $json = undef;
-    if ($res->decoded_content) {
-        $json = decode_json($res->decoded_content);
-    } else {
-        RT::Logger->warning("[RT::Extension::GSuite]: " .
-            "Unknown charset in auth response, try deserialize without decode"
-        );
-        $json = decode_json($res->content);
-    }
+    my $json = $self->_deserialize_response($res);
 
     # Validate JSON
-    my $validator = Data::Validator->new(
-        access_token => 'Str',
-        expires_in => 'Num',
-        token_type => 'Str'
-    )->with('AllowExtra');
-    my ($valid_json, %extra_data) = $validator->validate(%$json);
+    my ($valid_json, $extra_data) = $self->_validate_token_response($json);
 
     # Its ok, return access token
     my $tok = {
@@ -211,6 +190,123 @@ sub _generate_token {
     undef $jwt;
 
     return $tok;
+}
+
+
+=head2 _request(url, assertion, [%params])
+
+Obtains access token by HTTP request on the given url with params
+
+Parameters:
+
+=over
+
+=item url
+
+=item assertion - JWT contents (assertion request parameter)
+
+=item params - Optional. Additional POST parameters
+
+=back
+
+Returns:
+
+Furl::Response
+
+=cut
+
+
+sub _request {
+    my $self = shift;
+    my $assertion = shift;
+    my $url = shift;
+    my $params = [
+        approval_prompt => 'force',
+        grant_type => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+        assertion => $assertion,
+        @_
+    ];
+
+    my $req = Furl->new();
+    my $res = $req->post(
+        $url,
+        [],
+        $params
+    );
+
+    return $res;
+}
+
+
+=head2 _deserialize_response(response)
+
+Deserializes json in reponse body
+
+Parameters:
+
+=over
+
+=item response - Furl::Response object
+
+=back
+
+Returns:
+
+json HASHREF
+
+=cut
+
+
+sub _deserialize_response {
+    my $self = shift;
+    my $response = shift;
+
+    my $json = undef;
+    if ($response->decoded_content) {
+        $json = decode_json($response->decoded_content);
+    } else {
+        RT::Logger->warning("[RT::Extension::GSuite]: " .
+            "Unknown charset in auth response, try deserialize without decode"
+        );
+        $json = decode_json($response->content);
+    }
+
+    return $json;
+}
+
+
+=head2 _validate_token_response(json)
+
+Performs minimal validation on access token json response
+
+Parameters:
+
+=over
+
+=item json - HASHREF
+
+=back
+
+Returns:
+
+($valid_json, $extra_keys) on success or confess on error
+
+=cut
+
+
+sub _validate_token_response {
+    my $self = shift;
+    my $json = shift;
+
+    my $validator = Data::Validator->new(
+        access_token => 'Str',
+        expires_in => 'Num',
+        token_type => 'Str'
+    )->with('AllowExtra');
+    my ($valid_json, %extra_data) = $validator->validate(%$json);
+    undef $validator;
+
+    return ($valid_json, \%extra_data);
 }
 
 
