@@ -231,7 +231,12 @@ Parameters:
 sub _shred_string {
     my ($self, $ref) = @_;
 
-    croak "Trying to shred non-scalar ref" if (ref $ref ne 'SCALAR');
+    if (ref $ref ne 'SCALAR') {
+        RT::Logger->error(
+            "[RT::Extension::GSuite]: Trying to shred non-scalar ref"
+        );
+    }
+    
 
     my $l = do { use bytes; length($$ref); };
     substr(
