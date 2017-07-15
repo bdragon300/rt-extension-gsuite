@@ -125,7 +125,7 @@ sub generate_token {
 }
 
 
-=head2 _generate_token(from_json, target, [scopes])
+=head2 _generate_token(from_json, target, [scopes], [set_iat=1])
 
 Implements access_token obtaining process
 
@@ -138,6 +138,9 @@ Parameters:
 =item target - authorization URL
 
 =item scopes - Optional. ARRAYREF, claimed scopes
+
+=item set_iat - Optional. If true, then the iat claim will be set to the value 
+of "now" during "encode". Default is true.
 
 =back
 
@@ -153,10 +156,10 @@ sub _generate_token {
         from_json => undef,
         target => undef,
         scopes => [],
+        set_iat => 1,
         @_
     );
 
-    $args{set_iat} //= 1;
     $args{scopes} = Mojo::Collection->new( @{$args{scopes}} )
         if (ref $args{scopes} eq 'ARRAY');
 
