@@ -70,6 +70,7 @@ sub _gen {
         RT::Logger->error(
             '[RT::Extension::GSuite]: Unable to obtain access token'
         );
+        return (undef);
     }
 
     return Furl->new(
@@ -139,6 +140,7 @@ sub request {
         || time >= $self->{jwtauth}->{token}->{expires_at})
     {
         $self->{req} = $self->_gen($self->{jwtauth});
+        return (undef) unless $self->{req};
     }
 
     my $res = retry $opt->{retry_times}, $opt->{retry_interval}, sub {
