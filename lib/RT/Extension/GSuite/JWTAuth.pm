@@ -7,7 +7,6 @@ use warnings;
 use Mojo::JWT::Google;
 use Mojo::Collection;
 use Data::Validator;
-use Carp;
 use Furl;
 use JSON;
 
@@ -176,8 +175,10 @@ sub _generate_token {
         $params
     );
     unless ($res->is_success) {
-        confess "[RT::Extension::GSuite]: Error while request access_token: " 
-        . $res->code . ' ' . $res->message . ': ' . $res->content;
+        RT::Logger->error(
+            sprintf "[RT::Extension::GSuite]: Error while request access_token: %d %s: %s", 
+            $res->code, $res->message,  $res->content
+        );
     }
 
     # Deserialize JSON response
@@ -185,8 +186,9 @@ sub _generate_token {
     if ($res->decoded_content) {
         $json = decode_json($res->decoded_content);
     } else {
-        carp "[RT::Extension::GSuite]: " .
-            "Unknown charset in auth response, try deserialize without decode";
+        RT::Logger->warning("[RT::Extension::GSuite]: " .
+            "Unknown charset in auth response, try deserialize without decode"
+        );
         $json = decode_json($res->content);
     }
 
