@@ -163,8 +163,7 @@ sub _generate_token {
     $args{scopes} = Mojo::Collection->new( @{$args{scopes}} )
         if (ref $args{scopes} eq 'ARRAY');
 
-    my $jwt = Mojo::JWT::Google->new(%args);
-    $jwt->expires($jwt->now + 300);
+    my $jwt = _new_jwt(%args);
 
     # Send JWT and expect token
     my $res = $self->_request($args{target}, $jwt->encode);
@@ -193,6 +192,34 @@ sub _generate_token {
     undef $jwt;
 
     return $tok;
+}
+
+
+=head2 _new_jwt(ARGS)
+
+Returns new initialized Mojo::JWT::Google object
+
+Parameters:
+
+=over
+
+=item ARGS - parameters for the constructor
+
+=back
+
+Returns:
+
+Mojo::JWT::Google object
+
+=cut
+
+sub _new_jwt {
+    my $self = shift;
+
+    my $jwt = Mojo::JWT::Google->new(@_);
+    $jwt->expires($jwt->now + 300);
+
+    return $jwt;
 }
 
 
