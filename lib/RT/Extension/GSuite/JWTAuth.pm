@@ -248,14 +248,14 @@ Furl::Response
 
 sub _request {
     my $self = shift;
-    my $assertion = shift;
     my $url = shift;
+    my $assertion = shift;
     my $params = [
         approval_prompt => 'force',
         grant_type => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-        assertion => $assertion,
-        @_
-    ];
+        @_,
+        assertion => $assertion
+    ]; # ARRAYREF
 
     my $req = Furl->new();
     my $res = $req->post(
