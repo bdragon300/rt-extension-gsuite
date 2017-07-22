@@ -1,0 +1,10 @@
+use strict;
+use warnings;
+
+### after: use lib qw(@RT_LIB_PATH@);
+use lib qw(/opt/rt4/local/lib /opt/rt4/lib);
+
+package RT::Extension::GSuite::Test;
+use base 'RT::Test';
+
+1;
