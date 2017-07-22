@@ -117,14 +117,15 @@ sub generate_token {
     $self->{token} = $self->_generate_token(
         from_json => $self->{json_file},
         target => $self->{auth_url},
-        scopes => $self->{scopes}
+        'now' => time,
+        scopes => $self->{scopes},
     );
 
     return $self->{token};
 }
 
 
-=head2 _generate_token(from_json, target, [scopes], [set_iat=1])
+=head2 _generate_token(from_json, target, now, [scopes], [set_iat=1])
 
 Implements access_token obtaining process
 
@@ -135,6 +136,8 @@ Parameters:
 =item from_json - path to the json file with keys and other info
 
 =item target - authorization URL
+
+=item now - 'NOW' time epoch seconds
 
 =item scopes - Optional. ARRAYREF, claimed scopes
 
@@ -154,6 +157,7 @@ sub _generate_token {
     my %args = (
         from_json => undef,
         target => undef,
+        'now' => undef,
         scopes => [],
         set_iat => 1,
         @_
@@ -184,7 +188,7 @@ sub _generate_token {
     my $tok = {
         map { $_ => $valid_json->{$_} } qw(access_token expires_in token_type)
     };
-    $tok->{expires_at} = time + $tok->{expires_in};
+    $tok->{expires_at} = $args{'now'} + $tok->{expires_in};
 
     # Try to shred smth with secret data (not all), IB golovnogo mozga :)
     $self->_shred_string(\$jwt->{'secret'});
