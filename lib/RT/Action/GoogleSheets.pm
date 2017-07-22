@@ -285,6 +285,10 @@ sub Prepare {
             base_url => $base_url
         )
     );
+    unless($self->{sheet}->{request}->login()) {
+        RT::Logger->error('[RT::Extension::GSuite]: Unable to login');
+        return 0;
+    }
     $self->{tpl_headers} = \%headers;
     $self->{account_name} = $account_name;
 
