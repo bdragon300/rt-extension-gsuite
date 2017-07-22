@@ -253,12 +253,13 @@ sub _request {
     my $self = shift;
     my $url = shift;
     my $assertion = shift;
-    my $params = [
+    my %args = (
         approval_prompt => 'force',
         grant_type => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
         @_,
         assertion => $assertion
-    ]; # ARRAYREF
+    );
+    my $params = [%args]; # ARRAYREF
 
     my $req = Furl->new();
     my $res = $req->post(
