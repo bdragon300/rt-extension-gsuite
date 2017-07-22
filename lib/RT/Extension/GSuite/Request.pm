@@ -81,13 +81,13 @@ True if login was successfull, false otherwise
 sub login {
     my $self = shift;
 
-    $self->{req} = $self->_gen($self->{jwtauth});
+    $self->{req} = $self->_login($self->{jwtauth});
 
     return defined $self->{req};
 }
 
 
-sub _gen {
+sub _login {
     my ($self, $jwtauth) = @_;
 
     my $token = $jwtauth->generate_token(); # type: hashref
@@ -169,7 +169,7 @@ sub request {
     if ( ! $self->{jwtauth}->{token} 
         || time >= $self->{jwtauth}->{token}->{expires_at})
     {
-        $self->{req} = $self->_gen($self->{jwtauth});
+        $self->{req} = $self->_login($self->{jwtauth});
         return (undef) unless $self->{req};
     }
 
@@ -192,7 +192,7 @@ sub request {
                 . $res->status_line);
             return 1; # do retry
         } elsif ($res->code == 401) { # Regenerate token
-            $self->{req} = $self->_gen($self->{jwtauth});
+            $self->{req} = $self->_login($self->{jwtauth});
             return 1;
         } else {
             return;
