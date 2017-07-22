@@ -35,6 +35,8 @@ Igor Derkach, E<lt>gosha753951@gmail.comE<gt>
 
 =head2 new(base_url, jwtauth)
 
+Creates Request object. Call 'login' before any operation
+
 Parameters:
 
 =over
@@ -56,9 +58,32 @@ sub new {
     );
 
     my $self = bless {%args}, $class;
-    $self->{req} = $self->_gen($args{jwtauth});
+    $self->{req} = undef;
 
     return $self;
+}
+
+
+=head2 login
+
+Makes login process using JWTAuth object passed on create
+
+Parameters:
+
+No parameters
+
+Returns:
+
+True if login was successfull, false otherwise
+
+=cut
+
+sub login {
+    my $self = shift;
+
+    $self->{req} = $self->_gen($self->{jwtauth});
+
+    return defined $self->{req};
 }
 
 
@@ -113,6 +138,11 @@ Returns:
 sub request {
     # First version retrieved from Net::Google::Spreadsheets::V4
     my($self, $method, $suburl, $content, $opt) = @_;
+
+    unless($self->{req}) {
+        RT::Logger->error('[RT::Extension::GSuite]: Request object not logged in');
+        return wantarray ? ('', $res) : '';
+    }
 
     $opt = {
         retry_times    => 3,
