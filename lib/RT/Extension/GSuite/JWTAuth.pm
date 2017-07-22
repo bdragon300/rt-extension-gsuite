@@ -10,7 +10,6 @@ use Data::Validator;
 use Furl;
 use JSON;
 
-
 =head1 NAME
 
 RT::Extension::GSuite::JWTAuth - Implements OAuth 2.0 authorization using JSON Web Token generate
@@ -163,7 +162,7 @@ sub _generate_token {
     $args{scopes} = Mojo::Collection->new( @{$args{scopes}} )
         if (ref $args{scopes} eq 'ARRAY');
 
-    my $jwt = _new_jwt(%args);
+    my $jwt = $self->_new_jwt(%args);
 
     # Send JWT and expect token
     my $res = $self->_request($args{target}, $jwt->encode);
