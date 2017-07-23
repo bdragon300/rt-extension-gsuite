@@ -141,7 +141,7 @@ sub request {
 
     unless($self->{req}) {
         RT::Logger->error('[RT::Extension::GSuite]: Request object not logged in');
-        return wantarray ? ('', $res) : '';
+        return;
     }
 
     $opt = {
@@ -170,7 +170,7 @@ sub request {
         || time >= $self->{jwtauth}->{token}->{expires_at})
     {
         $self->{req} = $self->_login($self->{jwtauth});
-        return (undef) unless $self->{req};
+        return unless $self->{req};
     }
 
     my $res = retry $opt->{retry_times}, $opt->{retry_interval}, sub {
@@ -214,7 +214,7 @@ sub request {
                 '[RT::Extension::GSuite]: failure %s %s, %s => %s, %s', 
                 $method, $url, Dumper($content//'{no content}'), $res->status_line, $res->content
             ));
-            return wantarray ? ('', $res) : '';
+            return wantarray ? (undef, $res) : undef;
         }
     }
 }
