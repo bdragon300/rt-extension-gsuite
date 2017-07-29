@@ -219,7 +219,7 @@ sub request {
         } else {
             RT::Logger->error(sprintf(
                 '[RT::Extension::GSuite]: failure %s %s, %s => %s, %s', 
-                $method, $url, Dumper($content//'{no content}'), $res->status_line, $res->content
+                $method, $url, Dumper($content//'{no content}'), $res->status_line, Dumper($res->decoded_content//'{no content}')
             ));
             return wantarray ? (undef, $res) : undef;
         }
