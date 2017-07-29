@@ -158,7 +158,7 @@ sub request {
         $method, $url, Dumper($content//'{no content}', $opt//'no opt')
     ));
 
-    my @headers = [];
+    my @headers = ();
     if ($content) {
         push @headers, 'Content-Type' => 'application/json';
     }
