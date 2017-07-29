@@ -189,13 +189,16 @@ sub request {
         if (!$res) {
             RT::Logger->warning("[RT::Extension::GSuite]: not HTTP::Response: $@");
             return 1;
-        } elsif ($res->status_line =~ /^500\s+Internal Response/
-                     or $res->code =~ /^50[234]$/
+        }
+
+        my $code = $res->code;
+        my $line = $res->status_line;
+        if ($line =~ /^500\s+Internal Response/
+                     or $code =~ /^50[234]$/
                  ) {
-            RT::Logger->warning('[RT::Extension::GSuite]: retrying:' 
-                . $res->status_line);
+            RT::Logger->warning('[RT::Extension::GSuite]: retrying: ' . $line);
             return 1; # do retry
-        } elsif ($res->code == 401) { # Regenerate token
+        } elsif ($code == 401) { # Regenerate token
             $self->{req} = $self->_login($self->{jwtauth});
             return 1;
         } else {
