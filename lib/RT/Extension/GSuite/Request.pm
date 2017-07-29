@@ -105,7 +105,7 @@ sub _login {
     );
 }
 
-=head2 request(method, suburl, [content], [opt])
+=head2 request(method, suburl, [content], [opt], [now])
 
 Makes HTTP request with JSON payload
 
@@ -120,6 +120,8 @@ Parameters:
 =item content - Optional. Will be encoded to JSON and put as request content
 
 =item opt - Optional. HASHREF, {retry_times, retry_interval, headers}
+
+=item now - Optional. For test purposes, current unixtime. Default is now
 
 =back
 
@@ -137,7 +139,9 @@ Returns:
 
 sub request {
     # First version retrieved from Net::Google::Spreadsheets::V4
-    my($self, $method, $suburl, $content, $opt) = @_;
+    my($self, $method, $suburl, $content, $opt, $now) = @_;
+
+    $now //= time;
 
     unless($self->{req}) {
         RT::Logger->error('[RT::Extension::GSuite]: Request object not logged in');
@@ -167,7 +171,7 @@ sub request {
     }
 
     if ( ! $self->{jwtauth}->{token} 
-        || time >= $self->{jwtauth}->{token}->{expires_at})
+        || $now >= $self->{jwtauth}->{token}->{expires_at})
     {
         $self->{req} = $self->_login($self->{jwtauth});
         return unless $self->{req};
