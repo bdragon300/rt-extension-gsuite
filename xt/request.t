@@ -279,8 +279,9 @@ subtest 'test_request_relogin_when_token_expired' => sub {
     my $check_response = {};
 
     my $fm = furl_mock($m, $test_response);
+    $m->{req} = $fm;
 
-    $m->set_always('_login', $fm);
+    $m->set_true('login');
 
     my $now = $test_token{expires_at} + 1;
 
@@ -309,7 +310,7 @@ subtest 'test_request_undef_on_relogin_failed_when_token_expired' => sub {
 
     my $fm = furl_mock($m, $test_response);
 
-    $m->set_false('_login');
+    $m->set_false('login');
 
     my $now = $test_token{expires_at} + 1;
 

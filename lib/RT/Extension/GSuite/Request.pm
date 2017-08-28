@@ -173,8 +173,7 @@ sub request {
     if ( ! $self->{jwtauth}->{token} 
         || $now >= $self->{jwtauth}->{token}->{expires_at})
     {
-        $self->{req} = $self->_login($self->{jwtauth});
-        return unless $self->{req};
+        return unless $self->login($self->{jwtauth});
     }
 
     my $res = retry $opt->{retry_times}, $opt->{retry_interval}, sub {
@@ -199,7 +198,7 @@ sub request {
             RT::Logger->warning('[RT::Extension::GSuite]: retrying: ' . $line);
             return 1; # do retry
         } elsif ($code == 401) { # Regenerate token
-            $self->{req} = $self->_login($self->{jwtauth});
+            $self->login($self->{jwtauth});
             return 1;
         } else {
             return;
