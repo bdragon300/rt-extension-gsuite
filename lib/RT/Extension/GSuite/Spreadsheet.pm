@@ -9,13 +9,7 @@ use Carp;
 
 =head1 NAME
 
-  RT::Extension::GSuite::Spreadsheet - Spreadsheet interface to spreadsheet in 
-  Google Sheets
-
-=head1 DESCRIPTION
-
-  This package abstracts working with spreadsheet. It can be used inside 
-  RT Templates to interact with one spreadsheet.
+  RT::Extension::GSuite::Spreadsheet - Interface to a Google Sheets spreadsheet
 
 =head1 AUTHOR
 
@@ -29,10 +23,11 @@ Parameters:
 
 =over
 
-=item spreadsheet_id - spreadsheet id. Can be omitted but must be set via 
-SetSpreadsheetId before making requests
+=item request - Required. RT::Extension::GSuite::Request object used as request
+machinery
 
-=item request - RT::Extension::GSuite::Request object as request machinery
+=item spreadsheet_id - Optional. Spreadsheet id. Can be omitted but must be
+set later via SetSpreadsheetId before making requests
 
 =back
 
@@ -78,15 +73,15 @@ sub SetSpreadsheetId {
 }
 
 
-=head2 GetCells(range, API_OPTIONS)
+=head2 GetCells(range, %API_OPTIONS=>DEFAULTS)
 
-Returns a range of values from a spreadsheet.
+Obtain cells value by a range
 
 Parameters:
 
 =over
 
-=item range - cell range to retrieve in A1 notation
+=item range - cell range in A1 notation
 
 =item API_OPTIONS - named parameters with api request options. See function code
 
@@ -147,15 +142,15 @@ sub GetCells {
 }
 
 
-=head2 SetCells(range, values, API_OPTIONS)
+=head2 SetCells(range, \@values, %API_OPTIONS=>DEFAULTS)
 
-Sets values in a range of a spreadsheet.
+Write cells value by a range
 
 Parameters:
 
 =over
 
-=item range - cell range to set in A1 notation
+=item range - cell range in A1 notation
 
 =item values - ARRAYREF with data. Structure depends on majorDimension api 
 option whose default value is "ROWS".
@@ -231,15 +226,15 @@ sub SetCells {
 }
 
 
-=head2 GetCell(addr, API_OPTIONS)
+=head2 GetCell(addr, %API_OPTIONS=>DEFAULTS)
 
-Returns value of one cell in given address in the spreadsheet
+Obtain one cell value by an address
 
 Parameters:
 
 =over
 
-=item addr - cell address in A1 notation
+=item addr - address in A1 notation
 
 =item API_OPTIONS - named parameters with api request options. See function code
 
@@ -272,17 +267,17 @@ sub GetCell {
 }
 
 
-=head2 SetCell(addr, value, API_OPTIONS)
+=head2 SetCell(addr, value, %API_OPTIONS=>DEFAULTS)
 
-Returns value of one cell in given address in the spreadsheet
+Write one cell value by an address
 
 Parameters:
 
 =over
 
-=item addr - cell address in A1 notation
+=item addr - address in A1 notation
 
-=item value - cell value
+=item value - new value
 
 =item API_OPTIONS - named parameters with api request options. See function code
 

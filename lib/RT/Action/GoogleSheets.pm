@@ -19,71 +19,82 @@ C<RT::Action::GoogleSheets> - Interact with Google Sheets
 
 =head2 Summary
 
-This action is intended to work with Google Sheets spreadsheet. The passed 
-template sets up parameters of work by headers. Also all interact logic places
-into template code.
+This action is a part of RT::Extension::GSuite and intended to work with 
+Google Sheets spreadsheet. The specified template sets up parameters of action
+in headers. The whole interact logic places into template code.
 
 You can work with spreadsheet in two ways: simple and complex. 
 
 Simple: you specify cells by a header, e.g. "X-Read-Cells: A1:B4" and their 
-values will be loaded to the $$Cells variable. Similarly you can specify another
-range, e.g. "X-Write-Cells: C4:C20", put values into $$Cells inside template 
-code and spreadsheet will be updated by Action afterwards. (Always use this 
-variable with $$ before name).
+values will be loaded to the $$Cells variable. Similarly you can specify 
+another range, e.g. "X-Write-Cells: C4:C20", put values into $$Cells inside 
+template code and spreadsheet will be updated by Action afterwards. (Always 
+use this variable with $$ before name).
 
-If you want implement more complex behavior, you can manipulate already 
-preloaded spreadsheet object via $Sheet variable.
+If you want to implement more complex behavior, you can manipulate previously 
+loaded RT::Extension::GSuite::Spreadsheet object via $Sheet variable.
 
 =head2 Execute sequence
 
 =over
 
-=item * build context contains JWT auth, request objects and initialized 
-Spreadsheet object (headers from passed templates will be used for configuration). 
+=item * build context contained initialized objects: JWT auth, Request, 
+Spreadsheet. (headers from given templates will be used for configuration). 
 Authorization will be performed if necessary;
 
-=item * if X-Read-Cells template header is specified, load appropriate cell 
-values from the spreadsheet and put result to $$Cells variable
+=item * if X-Read-Cells template header is specified, then load appropriate 
+cell values from the spreadsheet and put result to the $$Cells variable
 
-=item * perform template parsing process (RT parses and executes code itself)
+=item * perform standard template parsing process
 
-=item * if X-Write-Cells template header is specified, write $$Cells variable 
+=item * if X-Write-Cells template header is specified, then write the $$Cells
 data to the appropriate cells in the spreadsheet
 
 =back
 
 =head2 Templates
 
-=head3 Headers:
+=head3 Headers
 
 =over
 
-=item * B<X-Spreadsheet-Id> - Required. Google spreadsheet id. See: 
+=item * B<X-Spreadsheet-Id> - Optional, but usually set. Google spreadsheet 
+id. If not set then you have to load spreadsheet manually using 
+$Sheet->SetSpreadsheetId(id). Also you can't use another headers such 
+X-Read-Cells in that case. Such behavior is suitable when spreadsheet id 
+calculates during template code execution.
+See: 
 L<https://developers.google.com/sheets/api/guides/concepts#spreadsheet_id>
 
-=item * B<X-Service-Account-Name> - Optional. Determine what account use. Default
-is 'default'.
+=item * B<X-Service-Account-Name> - Optional. What account name from extension
+config to use to log in the Google account. Default is 'default'.
 
-=item * B<X-Read-Cells> - Optional. If set must contain cell range in A1 notation,
-e.g. A1:B4. These cells will be read before template parse and their values will
-be put into $$Cells variable inside template context. Default API options will be
-used (majorDimension='ROWS'. i.e array of rows that contains cells).
+=item * B<X-Read-Cells> - Optional. Must contain cell range in A1 notation,
+e.g. A1:B4. Values of these cells will be read before the template 
+parsing and put into $$Cells variable inside template context. Default API 
+options will be used (for instance, majorDimension='ROWS').
 
-=item * B<X-Write-Cells> - Optional. If set must contain cell range in A1 notation,
-e.g. A1:B4. These cells will be filled from $$Cells variable after template parse
-process finished and code evaluated. Default API options will be used.
+=item * B<X-Write-Cells> - Optional. Must contain cell range in A1 notation,
+e.g. A1:B4. These cells will be filled out from $$Cells variable content 
+just after the template parse process has finished and the code has evaluated.
+Default API options will be used.
 
 =back
 
-=head3 Template context:
+Note: the Action obtains X-* headers value "as-is", before the some code 
+executes. Use $Sheet variable inside the template code if you want more complex
+behavior.
+
+=head3 Template context
 
 =over
 
-=item * B<$$Cells> - REF to ARRAYREF. Contains cells data preliminary read (if 
-set, empty array otherwise) and data that will be written afterwards (if set, 
-ignored otherwise)
+=item * B<$$Cells> - REF to ARRAYREF. Contains cells data preliminary read 
+(empty array if X-Read-Cells is not set) and data that will be written 
+afterwards (ignores if X-Write-Cells is not set).
 
-=item * B<$Sheet> - RT::Extension::GSuite::Spreadsheet object of current spreadsheet.
+=item * B<$Sheet> - RT::Extension::GSuite::Spreadsheet object of the current
+spreadsheet.
 
 =back
 
@@ -91,57 +102,62 @@ ignored otherwise)
 
 =head3 Simple read
 
-=begin text
+    X-Spreadsheet-Id: a8fdc205a9f19cc1c7507a60c4f01b13d11d7fd0a
+    X-Read-Cells: A1:B1
 
-X-Spreadsheet-Id: a8fdc205a9f19cc1c7507a60c4f01b13d11d7fd0a
-X-Read-Cells: A1:B1
-
-{
-    $Ticket->AddCustomFieldValue(Field=>12, Value=>$$Cells->[0]->[0]);
-    $Ticket->AddCustomFieldValue(Field=>15, Value=>$$Cells->[0]->[1]);
-}
-
-=end text
+    {
+        $Ticket->AddCustomFieldValue(Field=>12, Value=>$$Cells->[0]->[0]); # A1
+        $Ticket->AddCustomFieldValue(Field=>15, Value=>$$Cells->[0]->[1]); # B1
+    }
 
 =head3 Simple read/write
 
-=begin text
+    X-Spreadsheet-Id: a8fdc205a9f19cc1c7507a60c4f01b13d11d7fd0a
+    X-Read-Cells: A1
+    X-Write-Cells: Analytics!A1:B2
 
-X-Spreadsheet-Id: a8fdc205a9f19cc1c7507a60c4f01b13d11d7fd0a
-X-Read-Cells: A1
-X-Write-Cells: Analytics!C3:D4
+    {
+        $Ticket->AddCustomFieldValue(Field=>12, Value=>$$Cells->[0]->[0]); # A1
+        
+        $$Cells = [["Debet", "Credit"], [100, 1000]];
+        # Result:
+        # -----------------------
+        # |   |   A   |   B     |
+        # -----------------------
+        # | 1 | Debet | Credit  |
+        # -----------------------
+        # | 2 | 100   | 1000    |
+        # -----------------------
+    }
 
-{
-    $Ticket->AddCustomFieldValue(Field=>12, Value=>$$Cells->[0]->[0]);
-    
-    $$Cells = [["Debet", "Credit"], [100, 1000]]; #[[C3:C4], [D3:D4]];
-}
+=head3 Using $Sheet
 
-=end text
+    X-Spreadsheet-Id: a8fdc205a9f19cc1c7507a60c4f01b13d11d7fd0a
 
-=head3 Use $Sheet
+    {
+        # Same as previous example but we can change valueRenderOption api option and
+        #  get cell formula instead of value
+        $Ticket->AddCustomFieldValue(
+            Field=>"A1 formula",
+            Value=>$Sheet->GetCell("A1", valueRenderOption=>'FORMULA')
+        );
+        
+        # Cells filled as same as previous example, but we changed
+        #  majorDimension api parameter to 'COLUMNS'
+        # See: https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/get
 
-=begin text
+        my $data = [["Debet", "Credit"], [100, 1000]];
+        $Sheet->SetCells("Analytics!A1:B2", $data, majorDimension=>'COLUMNS');
+        # Result:
+        # -----------------------
+        # |   |   A    |   B    |
+        # -----------------------
+        # | 1 | Debet  | 100    |
+        # -----------------------
+        # | 2 | Credit | 1000   |
+        # -----------------------
+    }
 
-X-Spreadsheet-Id: a8fdc205a9f19cc1c7507a60c4f01b13d11d7fd0a
-
-{
-    # Same as previous example but we can change valueRenderOption api option and
-    #  get cell formula instead of value
-    $Ticket->AddCustomFieldValue(
-        Field=>"A1 formula",
-        Value=>$Sheet->GetCell("A1", valueRenderOption=>'FORMULA')
-    );
-    
-    # Cells fills as same as previous example, but we changed
-    #  majorDimension api parameter to 'COLUMNS'
-    # See: https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/get
-
-    my $data = [["Debet", 100], ["Credit", 1000]]; #[[C3:D3], [C4:D4]];
-    $Sheet->SetCells("Analytics!C3:D4", $data, majorDimension=>'COLUMNS');
-}
-
-=end text
 
 =head1 AUTHOR
 
@@ -155,7 +171,7 @@ Please report any bugs or feature requests to the L<author|/"AUTHOR">.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2015 Igor Derkach, E<lt>https://github.com/bdragon300/E<gt>
+Copyright 2017 Igor Derkach, E<lt>https://github.com/bdragon300/E<gt>
 
 This program is free software; you can redistribute it and/or modify it under
 the same terms as Perl itself.
@@ -165,17 +181,9 @@ Request Tracker (RT) is Copyright Best Practical Solutions, LLC.
 =cut
 
 
-=head1 VARIABLES
-
-=cut
-
-
-=head2 @template_headers
-
-List of available template headers
-
-=cut
-
+#
+# Available template headers
+#
 my @template_headers = (
     'X-Service-Account-Name',
     'X-Spreadsheet-Id',
@@ -183,12 +191,10 @@ my @template_headers = (
     'X-Write-Cells'
 );
 
-=head2 @scopes
 
-List of needed API scopes to interact with sheets api for read/write
-
-=cut
-
+#
+# List of needed API scopes to interact with sheets api for read/write
+#
 our @scopes = qw(
     https://www.googleapis.com/auth/drive
     https://www.googleapis.com/auth/drive.readonly
@@ -196,14 +202,11 @@ our @scopes = qw(
     https://www.googleapis.com/auth/spreadsheets.readonly
 );
 
-=head2 $base_url
 
-Base API url
-
-=cut
-
+#
+# Base API url
+#
 our $base_url = 'https://sheets.googleapis.com/v4/spreadsheets';
-
 
 
 sub Prepare {
@@ -322,7 +325,7 @@ sub Commit {
     }
     undef $cellsref;
 
-    # Put token in cache
+    # Put token to the cache
     store_token(
         $self->{account_name},
         $self->{sheet}->{request}->{jwtauth}->{token}

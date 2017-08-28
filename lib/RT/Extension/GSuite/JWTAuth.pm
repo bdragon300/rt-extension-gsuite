@@ -12,7 +12,7 @@ use JSON;
 
 =head1 NAME
 
-RT::Extension::GSuite::JWTAuth - Implements OAuth 2.0 authorization using JSON Web Token generate
+RT::Extension::GSuite::JWTAuth - Implements OAuth 2.0 authorization using JSON Web Token
 
 =head1 SYNOPSIS
 
@@ -31,13 +31,13 @@ access_token inside.
 
 Algo described at: https://developers.google.com/identity/protocols/OAuth2ServiceAccount
 
-Token hash has following keys;
+Token hash has following keys:
 
 =over
 
 =item * access_token  - access_token value
 
-=item * expires_in - number of seconds in which token is valid
+=item * expires_in - seconds during which token is valid
 
 =item * token_type - authorization type, usually 'Bearer'
 
@@ -51,13 +51,13 @@ Igor Derkach, E<lt>gosha753951@gmail.comE<gt>
 
 =head1 METHODS
 
-=head2 new(json_file, [scopes], [token], [auth_url])
+=head2 new(json_file, scopes=>undef, token=>undef, auth_url=>q(https://www.googleapis.com/oauth2/v4/token))
 
 Parameters:
 
 =over
 
-=item json_file - path to the json file with keys and other info
+=item json_file - path to the .json file with private key
 
 =item scopes - Optional. ARRAYREF, claimed scopes
 
@@ -89,7 +89,7 @@ sub new {
 
 =head2 token
 
-Current token
+Current token property
 
 =cut
 
@@ -125,7 +125,7 @@ sub generate_token {
 }
 
 
-=head2 _generate_token(from_json, target, now, [scopes], [set_iat=1])
+=head2 _generate_token(from_json, target, now, scopes=>[], set_iat=>1)
 
 Implements access_token obtaining process
 
@@ -133,7 +133,7 @@ Parameters:
 
 =over
 
-=item from_json - path to the json file with keys and other info
+=item from_json - path to the .json file with private key
 
 =item target - authorization URL
 
@@ -141,8 +141,8 @@ Parameters:
 
 =item scopes - Optional. ARRAYREF, claimed scopes
 
-=item set_iat - Optional. If true, then the iat claim will be set to the value 
-of "now" during "encode". Default is true.
+=item set_iat - Optional. If true, then the "iat" claim will be set to 
+the "now" value during JWT encode. Default is true.
 
 =back
 
@@ -198,9 +198,9 @@ sub _generate_token {
 }
 
 
-=head2 _new_jwt(ARGS)
+=head2 _new_jwt(%ARGS)
 
-Returns new initialized Mojo::JWT::Google object
+Returns new initialized JWT object
 
 Parameters:
 
@@ -226,9 +226,9 @@ sub _new_jwt {
 }
 
 
-=head2 _request(url, assertion, [%params])
+=head2 _request(url, assertion, \@params)
 
-Obtains access token by HTTP request on the given url with params
+Obtains access token by HTTP request from the given url with params
 
 Parameters:
 
@@ -238,7 +238,7 @@ Parameters:
 
 =item assertion - JWT contents (assertion request parameter)
 
-=item params - Optional. Additional POST parameters
+=item params - Optional. ARRAYREF, additional POST parameters if needed
 
 =back
 
@@ -274,7 +274,7 @@ sub _request {
 
 =head2 _deserialize_response(response)
 
-Deserializes json in reponse body
+Deserializes json from the response body
 
 Parameters:
 
@@ -286,7 +286,7 @@ Parameters:
 
 Returns:
 
-json HASHREF
+Deserialized object
 
 =cut
 

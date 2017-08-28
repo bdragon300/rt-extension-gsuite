@@ -15,18 +15,17 @@ our $PACKAGE = __PACKAGE__;
 
 =head1 NAME
 
-RT::Extension::GSuite - Google GSuite services for the Request Tracker
+RT::Extension::GSuite - Google GSuite services with JSON Web Token authorization
 
 =head1 DESCRIPTION
 
-The extension allows to work with Google GSuite products from Request Tracker
-Scrips. Uses Google API v4 with OAuth2 JWT authorization (Google Service Account).
+The extension allows to work with Google GSuite products from Request Tracker.
+It uses Google API v4 with OAuth2 JWT authorization (Google Service Account).
 
-Work approach: create Scrip, that runs Action from this extension
-(GoogleSheet for example) and write Template, which contains work logic. Set
-config headers inside Template. When Template code executes, it's standart 
-context complements by API object variables ($Sheet for example) through which
-you can work with API or raw data if you want only read/write smth for example.
+Work approach: create a Scrip or a crontab task, that runs an Action
+(GoogleSheet for example) and write Template that contains work logic. Set
+config headers inside Template. And then work with Google services straight 
+from template code via object interface.
 
 See appropriate modules docs.
 
@@ -70,7 +69,7 @@ Igor Derkach E<lt>gosha753951@gmail.comE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2015 Igor Derkach, E<lt>https://github.com/bdragon300/E<gt>
+Copyright 2017 Igor Derkach, E<lt>https://github.com/bdragon300/E<gt>
 
 This program is free software; you can redistribute it and/or modify it under
 the same terms as Perl itself.
@@ -81,8 +80,8 @@ Request Tracker (RT) is Copyright Best Practical Solutions, LLC.
 =cut
 
 
-# name => token_hash
-# each token hash keys -- see RT::Extension::GSuite::JWTAuth docs
+# {name => token_hash}
+# For each token contents see RT::Extension::GSuite::JWTAuth docs
 our %tokens = ();
 
 

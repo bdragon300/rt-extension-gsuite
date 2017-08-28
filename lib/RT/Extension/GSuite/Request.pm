@@ -22,11 +22,6 @@ use Data::Dumper qw(Dumper);
     base_url => 'https://www.googleapis.com/...'
   );
 
-=head1 DESCRIPTION
-
-  Package makes requests to the API. Object constructor accepts RT::Extension::GSuite::JWTAuth
-  object that stores access_token and generates new one if expired.
-
 =head1 AUTHOR
 
 Igor Derkach, E<lt>gosha753951@gmail.comE<gt>
@@ -34,8 +29,6 @@ Igor Derkach, E<lt>gosha753951@gmail.comE<gt>
 =head1 METHODS
 
 =head2 new(base_url, jwtauth)
-
-Creates Request object. Call 'login' before any operation
 
 Parameters:
 
@@ -66,7 +59,7 @@ sub new {
 
 =head2 login
 
-Makes login process using JWTAuth object passed on create
+Logs in Google Account using internal JWTAuth object
 
 Parameters:
 
@@ -105,9 +98,9 @@ sub _login {
     );
 }
 
-=head2 request(method, suburl, [content], [opt], [now])
+=head2 request(method, suburl, content=>undef, \%opt=>{})
 
-Makes HTTP request with JSON payload
+Makes HTTP request with optional JSON payload
 
 Parameters:
 
@@ -117,11 +110,9 @@ Parameters:
 
 =item suburl - will be concatenated with base url
 
-=item content - Optional. Will be encoded to JSON and put as request content
+=item content - Optional. Object that will be encoded to JSON and put as request content
 
 =item opt - Optional. HASHREF, {retry_times, retry_interval, headers}
-
-=item now - Optional. For test purposes, current unixtime. Default is now
 
 =back
 
