@@ -4,7 +4,7 @@ use warnings;
 our @ScripActions = (
 {
     Name => 'GoogleSheets',
-    Description => 'Working with Google Sheets service',
+    Description => 'Interact with Google Sheets',
     ExecModule => 'GoogleSheets'
 }
 );
