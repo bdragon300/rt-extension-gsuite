@@ -343,7 +343,7 @@ sub _match_a1_cell_range {
 
 sub _match_a1_cell {
     shift if ref $_[0];
-    $_[0] =~ /^([A-Za-z]+[1-9][0-9]*)$/;
+    $_[0] =~ /^([^!]+!)?([A-Za-z]+[1-9][0-9]*)$/;
 }
 
 1;
