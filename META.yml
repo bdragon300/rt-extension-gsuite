@@ -19,6 +19,13 @@ no_index:
     - inc
 requires:
   perl: 5.8.3
+  Furl: 3.0.7
+  Data::Validator: 1.07
+  Mojo::Collection: 0
+  Mojo::JWT::Google: 0
+  JSON: 2.90
+  Sub::Retry: 0.06
+  Mouse: 0
 resources:
   license: http://dev.perl.org/licenses/
 version: '0.1'
