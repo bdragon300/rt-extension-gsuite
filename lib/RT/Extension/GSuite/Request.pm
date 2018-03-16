@@ -145,7 +145,7 @@ sub request {
         %{ $opt // {} },
     };
 
-    #$base_url .= '/' if ($base_url !~ /\/$/);  # Append slash
+    #$base_url .= '/' if ($base_url !~ /\/$/);  # Append slash  # TODO: one slash between base_url and suburl
     my $url = $self->{base_url} . $suburl;
 
     RT::Logger->debug(sprintf(
