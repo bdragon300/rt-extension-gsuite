@@ -13,6 +13,7 @@ requires 'Mojo::Collection' => 0;
 requires 'Mojo::JWT::Google' => 0;
 requires 'JSON' => '2.90';
 requires 'Sub::Retry' => '0.06';
+requires 'Mouse' => 0;
 test_requires 'Test::MockObject';
 # test_requires 'Test::Routine';
 auto_install();
