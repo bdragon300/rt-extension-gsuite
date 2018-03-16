@@ -6,6 +6,11 @@ our @ScripActions = (
     Name => 'GoogleSheets',
     Description => 'Interact with Google Sheets',
     ExecModule => 'GoogleSheets'
+},
+{
+    Name => 'Google Calendar',
+    Description => 'Interact with Google Sheets',
+    ExecModule => 'GoogleCalendar'
 }
 );
 
