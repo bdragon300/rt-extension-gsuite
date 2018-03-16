@@ -30,6 +30,7 @@ Dependencies:
 * Mojo::JWT::Google
 * JSON >= 2.90
 * Sub::Retry >= 0.06
+* Mouse
 
 Commands to install:
 
