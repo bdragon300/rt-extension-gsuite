@@ -237,14 +237,6 @@ sub Prepare {
     }
 
     # Create objects available in template
-    # If X-Calendar-Id didn't specified its supposed that user will set it afterwards
-    my $calendar_id = $headers{'X-Calendar-Id'};
-    unless ($calendar_id) {
-        RT::Logger->notice(
-            "[RT::Extension::GSuite]: Template #" . $self->TemplateObj->id
-            . ": X-Calendar-Id header did not specified. You can set calendar id manually before making requests"
-        );
-    }
     my $req = RT::Extension::GSuite::Request->new(
         jwtauth => RT::Extension::GSuite::JWTAuth->new(
             token => $token,
@@ -261,9 +253,20 @@ sub Prepare {
     $self->{calendar} = RT::Extension::GSuite::Calendar::Calendar->new(
         request_obj => $req
     );
-    unless ($self->{calendar}->Get($calendar_id)) {
-        RT::Logger->error('[RT::Extension::GSuite]: Unable to load calendar with id=' . $calendar_id);
-        return 0;
+    # If X-Calendar-Id didn't specified its supposed that user will set it afterwards
+    my $calendar_id = $headers{'X-Calendar-Id'};
+    if ($calendar_id) {
+        unless ($self->{calendar}->Get($calendar_id)) {
+            RT::Logger->error(
+                '[RT::Extension::GSuite]: Unable to load calendar with id=' . $calendar_id
+            );
+            return 0;
+        }
+    } else {
+        RT::Logger->notice(
+            "[RT::Extension::GSuite]: Template #" . $self->TemplateObj->id
+            . ": X-Calendar-Id header did not specified. You can set calendar id manually before making requests"
+        );
     }
 
     $self->{events} = $self->{calendar}->GetEvents();
