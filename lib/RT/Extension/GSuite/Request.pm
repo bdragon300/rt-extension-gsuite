@@ -150,6 +150,11 @@ sub request {
 
     #$base_url .= '/' if ($base_url !~ /\/$/);  # Append slash  # TODO: one slash between base_url and suburl
     my $url = $self->{base_url} . $suburl;
+    if ($params) {
+        my %params = map { $_ => uri_escape($params->{$_}) } keys %$params;
+        $url .= '?' . join('&', map { $_ . '=' . $params{$_} } keys %params)
+            if %params;
+    }
 
     RT::Logger->debug(sprintf(
         "[RT::Extension::GSuite]: request: %s => %s %s %s", 

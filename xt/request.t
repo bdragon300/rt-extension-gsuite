@@ -239,6 +239,38 @@ subtest 'test_request_return_undef_response_on_no_decoded_content' => sub {
 };
 
 
+subtest 'test_request_escape_request_url' => sub {
+    my $m = main_mock();
+    $m->{jwtauth} = {token => \%test_token};
+
+    my $test_response = '{"test": "response"}';
+    my $test_suburl = 'suburl';
+    my %test_query_params = (  # :)
+        foo => 'matryoshka$balalaika?babushka!spasibo',
+        bar => 'Горбачев водка перестройка',
+        ussr => 0
+    );
+    my %check_query_params = (
+        foo => 'matryoshka%24balalaika%3Fbabushka%21spasibo',
+        bar => '%D0%93%D0%BE%D1%80%D0%B1%D0%B0%D1%87%D0%B5%D0%B2%20%D0%B2%D0%BE%D0%B4%D0%BA%D0%B0%20%D0%BF%D0%B5%D1%80%D0%B5%D1%81%D1%82%D1%80%D0%BE%D0%B9%D0%BA%D0%B0',
+        ussr => '0'
+    );
+
+    my $fm = furl_mock($m, $test_response);
+    my $now = $test_token{expires_at} - 1;
+
+    my @test_params = ('GET' => $test_suburl, \%test_query_params, undef, undef, $now);
+
+    #
+    my $res = $m->request(@test_params);
+    #
+
+    my @call_args = $fm->call_args(0);
+    is $call_args[2], $test_params[0];  # method
+    like($call_args[4], qr/\Q$_\E/) for map { "${_}=" . $check_query_params{$_} } keys %check_query_params;  # url
+};
+
+
 subtest 'test_request_add_content_type_header_if_request_content_not_empty' => sub {
     my $m = main_mock();
     $m->{jwtauth} = {token => \%test_token};
