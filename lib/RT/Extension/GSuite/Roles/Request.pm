@@ -50,7 +50,7 @@ Google API request helper method. Performs request and handles errors
 
 Parameters:
 
-(method, suburl, content, opt). See RT::Extension::GSuite::Request::request docs
+(method, suburl, content, params, opt). See RT::Extension::GSuite::Request::request docs
 
 Returns:
 

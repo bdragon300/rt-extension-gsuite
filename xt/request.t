@@ -162,7 +162,7 @@ subtest 'test_request_return_scalar_response_content' => sub {
     *RT::Extension::GSuite::Request::decode_json = sub { $check_response; };
     &RT::Extension::GSuite::Request::decode_json;  # prevent warning 'used only once'
 
-    my @test_params = ('GET' => 'test_suburl', undef, undef, $now);
+    my @test_params = ('GET' => 'test_suburl', undef, undef, undef, $now);
 
     #
     my $res = $m->request(@test_params);
@@ -192,7 +192,7 @@ subtest 'test_request_return_list_response_content_and_request_object' => sub {
     *RT::Extension::GSuite::Request::decode_json = sub { $check_response; };
     &RT::Extension::GSuite::Request::decode_json;  # prevent warning 'used only once'
 
-    my @test_params = ('GET' => 'test_suburl', undef, undef, $now);
+    my @test_params = ('GET' => 'test_suburl', undef, undef, undef, $now);
 
     #
     my @res = $m->request(@test_params);
@@ -222,7 +222,7 @@ subtest 'test_request_return_undef_response_on_no_decoded_content' => sub {
     *RT::Extension::GSuite::Request::decode_json = sub { $check_response; };
     &RT::Extension::GSuite::Request::decode_json;  # prevent warning 'used only once'
 
-    my @test_params = ('GET' => 'test_suburl', undef, undef, $now);
+    my @test_params = ('GET' => 'test_suburl', undef, undef, undef, $now);
 
     #
     my $res = $m->request(@test_params);
@@ -254,7 +254,7 @@ subtest 'test_request_add_content_type_header_if_request_content_not_empty' => s
     *RT::Extension::GSuite::Request::decode_json = sub { $check_response; };
     &RT::Extension::GSuite::Request::decode_json;  # prevent warning 'used only once'
 
-    my @test_params = ('GET' => 'test_suburl', $test_request_content_hash, undef, $now);
+    my @test_params = ('GET' => 'test_suburl', undef, $test_request_content_hash, undef, $now);
 
     #
     my $res = $m->request(@test_params);
@@ -288,7 +288,7 @@ subtest 'test_request_relogin_when_token_expired' => sub {
     *RT::Extension::GSuite::Request::decode_json = sub { $check_response; };
     &RT::Extension::GSuite::Request::decode_json;  # prevent warning 'used only once'
 
-    my @test_params = ('GET' => 'test_suburl', undef, undef, $now);
+    my @test_params = ('GET' => 'test_suburl', undef, undef, undef, $now);
 
     #
     my $res = $m->request(@test_params);
@@ -314,7 +314,7 @@ subtest 'test_request_undef_on_relogin_failed_when_token_expired' => sub {
 
     my $now = $test_token{expires_at} + 1;
 
-    my @test_params = ('GET' => 'test_suburl', undef, undef, $now);
+    my @test_params = ('GET' => 'test_suburl', undef, undef, undef, $now);
 
     #
     my $res = $m->request(@test_params);
@@ -341,7 +341,7 @@ subtest 'test_request_retry_on_http_50x' => sub {
     *RT::Extension::GSuite::Request::decode_json = sub { $check_response; };
     &RT::Extension::GSuite::Request::decode_json;  # prevent warning 'used only once'
 
-    my @test_params = ('GET' => 'test_suburl', undef, undef, $now);
+    my @test_params = ('GET' => 'test_suburl', undef, undef, undef, $now);
 
     #
     my $res = $m->request(@test_params);
@@ -371,7 +371,7 @@ subtest 'test_request_retry_relogin_on_http_401' => sub {
     *RT::Extension::GSuite::Request::decode_json = sub { $check_response; };
     &RT::Extension::GSuite::Request::decode_json;  # prevent warning 'used only once'
 
-    my @test_params = ('GET' => 'test_suburl', undef, undef, $now);
+    my @test_params = ('GET' => 'test_suburl', undef, undef, undef, $now);
 
     #
     my $res = $m->request(@test_params);
@@ -396,7 +396,7 @@ subtest 'test_request_retry_on_response_is_undef' => sub {
     *RT::Extension::GSuite::Request::decode_json = sub { $check_response; };
     &RT::Extension::GSuite::Request::decode_json;  # prevent warning 'used only once'
 
-    my @test_params = ('GET' => 'test_suburl', undef, undef, $now);
+    my @test_params = ('GET' => 'test_suburl', undef, undef, undef, $now);
 
     #
     my $res = $m->request(@test_params);
@@ -423,7 +423,7 @@ subtest 'test_request_return_undef_if_response_still_undef' => sub {
     *RT::Extension::GSuite::Request::decode_json = sub { $check_response; };
     &RT::Extension::GSuite::Request::decode_json;  # prevent warning 'used only once'
 
-    my @test_params = ('GET' => 'test_suburl', undef, undef, $now);
+    my @test_params = ('GET' => 'test_suburl', undef, undef, undef, $now);
 
     #
     my $res = $m->request(@test_params);
@@ -451,7 +451,7 @@ subtest 'test_request_return_undef_if_response_still_failed' => sub {
     *RT::Extension::GSuite::Request::decode_json = sub { $check_response; };
     &RT::Extension::GSuite::Request::decode_json;  # prevent warning 'used only once'
 
-    my @test_params = ('GET' => 'test_suburl', undef, undef, $now);
+    my @test_params = ('GET' => 'test_suburl', undef, undef, undef, $now);
 
     #
     my $res = $m->request(@test_params);

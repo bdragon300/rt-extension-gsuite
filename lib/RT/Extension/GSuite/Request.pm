@@ -7,6 +7,7 @@ use warnings;
 use Furl;
 use JSON;
 use Sub::Retry;
+use URI::Escape qw(uri_escape);
 use Data::Dumper qw(Dumper);
 
 =head1 NAME
@@ -98,7 +99,7 @@ sub _login {
     );
 }
 
-=head2 request(method, suburl, content=>undef, \%opt=>{})
+=head2 request(method, suburl, params, content=>undef, \%opt=>{})
 
 Makes HTTP request with optional JSON payload
 
@@ -109,6 +110,8 @@ Parameters:
 =item method - HTTP method name, e.g. 'GET'
 
 =item suburl - will be concatenated with base url
+
+=item params - query parameters HASHREF
 
 =item content - Optional. Object that will be encoded to JSON and put as request content
 
@@ -130,7 +133,7 @@ Returns:
 
 sub request {
     # First version retrieved from Net::Google::Spreadsheets::V4
-    my($self, $method, $suburl, $content, $opt, $now) = @_;
+    my($self, $method, $suburl, $params, $content, $opt, $now) = @_;
 
     $now //= time;
 
