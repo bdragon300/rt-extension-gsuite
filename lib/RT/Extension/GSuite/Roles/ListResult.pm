@@ -125,15 +125,12 @@ sub Next {
     my $r = $self->list_result;
     my $item = $r && $r->[$self->offset];
     $self->offset($self->offset + 1);
+    return $self->_MakeItem($item) if (defined $item);
 
-    unless (defined $item) {  # First/Next page
-        if ( $self->page && ! $self->_next_page_token) {
-            $self->_iter_end(1);
-            return (undef);
-        }
-        my $t;
-        # my $t = $self->_next_page_token;
-        # $self->_iter_end(defined $t && $t eq '');
+    # Google API may return empty result with nextPageToken
+    # Keep fetching until non-empty items would met or nextPageToken disappeared
+    my $t;
+    while ($self->page == 0 || ($self->_next_page_token && ! defined $item)) {
         ($r, $t) =
             $self->_FetchPage($self->_next_page_token);
         $self->list_result($r);
@@ -142,11 +139,11 @@ sub Next {
 
         $item = $r && $r->[0];
         $self->offset(1);
-        $self->_iter_end(1) unless ($t || defined $item);
     }
-    
+
     return $self->_MakeItem($item) if (defined $item);
 
+    $self->_iter_end(1);  # No more results
     return (undef);
 }
 
