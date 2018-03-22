@@ -105,13 +105,7 @@ sub Get {
     my $id = shift;
 
     my $suburl = sprintf $self->suburl, $self->calendar_id, $id;
-    if ($self->request_params) {
-        $suburl .= '?' . join('&', 
-            map { $_ . '=' . $self->request_params->{$_} } 
-            keys %{$self->request_params}
-        );
-    }
-    my ($content, $res) = $self->_Request(GET => $suburl);
+    my ($content, $res) = $self->_Request(GET => $suburl, $self->request_params);
 
     return (undef) unless ($res->is_success);
     $self->_FillAttributes(%$content);

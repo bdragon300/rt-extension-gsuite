@@ -95,13 +95,10 @@ sub _FetchPage {
 
     my $suburl = sprintf $self->suburl, $self->calendar_id;
     
-    my %params;
-    %params = (%params, %{$self->request_params}) if %{$self->request_params};
+    my %params = %{$self->request_params};
     $params{pageToken} = $nptoken if $nptoken;
-    $suburl .= '?' . join('&', map { $_ . '=' . $params{$_} } keys %params)
-        if %params;
 
-    my ($content, $res) = $self->_Request(GET => $suburl);
+    my ($content, $res) = $self->_Request(GET => $suburl, \%params);
     
     return (undef) unless ($res->is_success);
     
