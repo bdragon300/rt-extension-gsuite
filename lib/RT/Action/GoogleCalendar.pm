@@ -10,6 +10,7 @@ use RT::Extension::GSuite::JWTAuth;
 use RT::Extension::GSuite::Request;
 use RT::Extension::GSuite::Calendar::CalendarList;
 use RT::Extension::GSuite::Calendar::Calendar;
+use RT::Extension::GSuite::Calendar::EventList;
 
 
 =head1 NAME
@@ -269,7 +270,10 @@ sub Prepare {
         );
     }
 
-    $self->{events} = $self->{calendar}->GetEvents();
+    $self->{events} = RT::Extension::GSuite::Calendar::EventList->new(
+        request_obj => $req,
+        calendar_id => $calendar_id // ''
+    );
     $self->{calendar_list} = RT::Extension::GSuite::Calendar::CalendarList->new(
         request_obj => $req
     );
