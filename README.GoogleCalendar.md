@@ -79,7 +79,7 @@ Search for events using ticket subject as search string, next obtain the summary
     my $search = $Ticket->Subject;  # Lets search by subject as query
     my @summaries;
     while (my $cal = $CalendarList->Next) {
-        my $events = $cal->GetEvents;  # Obtain events list in current calendar
+        my $events = $cal->Events;  # Obtain events list in current calendar
         $events->request_params->{q} = $search;  # Set 'q' query parameter, see API docs
         while (my $event = $events->Next) {
             push @summaries, $event->summary;
@@ -100,7 +100,7 @@ Search for events using ticket subject as search string, next obtain the summary
     foreach my $cal_id (@cal_ids) {
         $Calendar->Get($cal_id);  # Get and load calendar  by id
 
-        my $events = $Calendar->GetEvents;  # Events list
+        my $events = $Calendar->Events;  # Events list
         $events->request_params->{showDeleted} = 'true';  # Mark that we want also see deleted events
         while (my $event = $events->Next) {
             next unless defined $event->{attendees};  # 'attendees' can be absent in response

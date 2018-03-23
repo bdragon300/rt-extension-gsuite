@@ -72,7 +72,7 @@ sub Get {
 }
 
 
-=head2 GetEvents() -> $iterator
+=head2 Events() -> $iterator
 
 Return iterator with events in current calendar
 
@@ -90,7 +90,7 @@ Returns:
 
 =cut
 
-sub GetEvents {
+sub Events {
     my $self = shift;
 
     unless ($self->id) {

@@ -113,7 +113,7 @@ sub Get {
     return 1;
 }
 
-=head2 GetCalendar() -> $calendar_object
+=head2 Calendar() -> $calendar_object
 
 Return Calendar object which this event belongs to
 
@@ -127,7 +127,7 @@ Loaded RT::Extension::GSuite::Calendar::Calendar object
 
 =cut
 
-sub GetCalendar {
+sub Calendar {
     my $self = shift;
 
     unless ($self->id) {
