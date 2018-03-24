@@ -45,11 +45,11 @@ X-Spreadsheet-Id: a8fdc205a9f19cc1c7507a60c4f01b13d11d7fd0a
 {
     $Ticket->AddCustomFieldValue(
         Field=>"A1 formula",
-        Value=>$Sheet->GetCell("A1", valueRenderOption=>'FORMULA')
+        Value=>$Sheet->GetCell("A1")
     );
 
     my $data = [["Debet", "Credit"], [100, 1000]];
-    $Sheet->SetCells("Analytics!A1:B2", $data, majorDimension=>'COLUMNS');
+    $Sheet->SetCells("Analytics!A1:B2", $data);
     # Was wrote:
     # -----------------------
     # |   |   A    |   B    |
