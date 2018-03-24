@@ -22,7 +22,7 @@ Note: the Action reads X-* headers value "as-is", so you cannot put some code th
 
 The Action preloads following variables available in passed template:
 
-* ```$Calendar``` -- RT::Extension::GSuite::Calendar::Calendar object. Calendar obtained by id specified in ```X-Calendar-Id``` template header
+* ```$Calendar``` -- RT::Extension::GSuite::Calendar object. Calendar obtained by id specified in ```X-Calendar-Id``` template header
 * ```$CalendarList``` -- RT::Extension::GSuite::Calendar::CalendarList object. Current account's calendar list (all ones shown on the left panel in web interface)
 * ```$Events``` -- RT::Extension::GSuite::Calendar::EventList object contained events of ```$Calendar``` object.
 

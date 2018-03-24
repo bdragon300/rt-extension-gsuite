@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Mouse;
 
-use RT::Extension::GSuite::Calendar::Calendar;
+use RT::Extension::GSuite::Calendar;
 
 =head1 NAME
 
@@ -123,7 +123,7 @@ None
 
 Return:
 
-Loaded RT::Extension::GSuite::Calendar::Calendar object
+Loaded RT::Extension::GSuite::Calendar object
 
 =cut
 
@@ -135,7 +135,7 @@ sub Calendar {
             'current object has not loaded';
     }
 
-    my $cal = RT::Extension::GSuite::Calendar::Calendar->new(
+    my $cal = RT::Extension::GSuite::Calendar->new(
         request_obj => $self->request_obj
     );
     $cal->Get($self->calendar_id);

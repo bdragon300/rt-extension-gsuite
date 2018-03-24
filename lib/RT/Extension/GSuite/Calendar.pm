@@ -1,4 +1,4 @@
-package RT::Extension::GSuite::Calendar::Calendar;
+package RT::Extension::GSuite::Calendar;
 
 use 5.010;
 use strict;
@@ -9,7 +9,7 @@ use RT::Extension::GSuite::Calendar::EventList;
 
 =head1 NAME
 
-  RT::Extension::GSuite::Calendar::Calendar - Calendar object
+  RT::Extension::GSuite::Calendar - Calendar object
 
 =head1 AUTHOR
 

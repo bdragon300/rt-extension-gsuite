@@ -8,8 +8,8 @@ use base qw(RT::Action);
 use RT::Extension::GSuite qw(load_config load_token store_token check_json_file);
 use RT::Extension::GSuite::JWTAuth;
 use RT::Extension::GSuite::Request;
+use RT::Extension::GSuite::Calendar;
 use RT::Extension::GSuite::Calendar::CalendarList;
-use RT::Extension::GSuite::Calendar::Calendar;
 use RT::Extension::GSuite::Calendar::EventList;
 
 
@@ -50,7 +50,7 @@ The Action preloads following variables available in passed template:
 
 =over
 
-=item * B<$Calendar> -- RT::Extension::GSuite::Calendar::Calendar object. 
+=item * B<$Calendar> -- RT::Extension::GSuite::Calendar object. 
 Calendar obtained by id specified in B<X-Calendar-Id> template header
 
 =item * B<$CalendarList> -- RT::Extension::GSuite::Calendar::CalendarList 
@@ -251,7 +251,7 @@ sub Prepare {
         return 0;
     }
 
-    $self->{calendar} = RT::Extension::GSuite::Calendar::Calendar->new(
+    $self->{calendar} = RT::Extension::GSuite::Calendar->new(
         request_obj => $req
     );
     # If X-Calendar-Id didn't specified its supposed that user will set it afterwards

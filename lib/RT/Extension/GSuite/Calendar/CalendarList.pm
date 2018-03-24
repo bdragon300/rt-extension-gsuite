@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Mouse;
 
-use RT::Extension::GSuite::Calendar::Calendar;
+use RT::Extension::GSuite::Calendar;
 
 =head1 NAME
 
@@ -59,7 +59,7 @@ sub _MakeItem {
     my $self = shift;
     my $data = shift;
 
-    return RT::Extension::GSuite::Calendar::Calendar->new(
+    return RT::Extension::GSuite::Calendar->new(
         request_obj => $self->request_obj,
         %$data
     );
