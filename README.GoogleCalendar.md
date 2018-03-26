@@ -70,6 +70,26 @@ X-Calendar-Id: user@example.com
 }
 ```
 
+### Read start datetime of all instances of recurring events
+
+```
+X-Calendar-Id: user@example.com
+
+{
+    my %instances;  # Summary => [dateTime]
+    while (my $e = $Events->Next) {  # Iterate over events
+        my $instances = $e->Instances;
+        while (my $inst = $instances->Next) {
+            next unless $inst->start;
+            $instances{$inst->summary} = [] unless exists $instances{$inst->summary};
+            push %instances{$inst->summary}, $inst->start->{dateTime};
+        }
+    }
+    my @msg = map { $_ . ': '. join ',', @{$instances{$_}} } keys %instances;
+    $Ticket->Comment(Content => 'Recurring events: ' . join('; ', @msg) );  # Comment out the ticket with text contained  descriptions divided by semicolon
+}
+```
+
 ### Collect summaries of events that meet search criteria
 
 Search for events using ticket subject as search string, next obtain the summary from every event found and, finally, push them to a multi-value CustomField "RelatedEvents".
