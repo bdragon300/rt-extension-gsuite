@@ -30,7 +30,7 @@ The Action preloads following variables available in passed template:
 
 Calendar object:
 ```
-perldoc <RTBASEPATH>/local/plugins/RT-Extension-GSuite/lib/RT/Extension/GSuite/Calendar/Calendar.pm
+perldoc <RTBASEPATH>/local/plugins/RT-Extension-GSuite/lib/RT/Extension/GSuite/Calendar.pm
 ```
 
 CalendarList object:
