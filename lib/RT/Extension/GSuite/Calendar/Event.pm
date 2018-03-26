@@ -143,6 +143,26 @@ sub Calendar {
 }
 
 
+=head2 Instances() -> $event_instances_object
+
+Return iterator object over instances of current recurring event
+
+More: https://developers.google.com/calendar/v3/reference/events/instances
+
+Parameters:
+
+None
+
+Returns:
+
+=over
+
+=item loaded RT::Extension::GSuite::Calendar::EventList object
+
+=back
+
+=cut
+
 sub Instances {
     my $self = shift;
 
