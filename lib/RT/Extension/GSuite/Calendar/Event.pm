@@ -142,4 +142,24 @@ sub Calendar {
     return $cal;
 }
 
+
+sub Instances {
+    my $self = shift;
+
+    use RT::Extension::GSuite::Calendar::EventList;
+
+    unless ($self->id) {
+        die '[RT::Extension::GSuite]: Unable to load related list, because ' .
+            'current object has not loaded';
+    }
+
+    my $new_suburl = '/calendars/%s/events/' . $self->id . '/instances';
+
+    return RT::Extension::GSuite::Calendar::EventList->new(
+        request_obj => $self->request_obj,
+        calendar_id => $self->calendar_id,
+        suburl => $new_suburl
+    );
+}
+
 1;
