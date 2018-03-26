@@ -217,7 +217,7 @@ sub SetCells {
     $range_obj->range($range);
     $range_obj->values($values);
 
-    $range_obj->Put(1);
+    $range_obj->Save(1);
 
     return wantarray ? @{$range_obj->values} : $range_obj->values;
 }

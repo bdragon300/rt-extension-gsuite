@@ -179,7 +179,7 @@ sub Reload {
 }
 
 
-=head2 Put($reload_after, %API_ARGS => DEFAULTS) -> boolean
+=head2 Save($reload_after, %API_ARGS => DEFAULTS) -> boolean
 
 Write current object to a spreadsheet.
 
@@ -206,7 +206,7 @@ Whether operation was successfull
 
 =cut
 
-sub Put {
+sub Save {
     my $self = shift;
     my $reload_after = shift;
     my %api_args = (
@@ -342,7 +342,7 @@ sub Column {
 }
 
 
-before qw(Put Row Column) => sub {
+before qw(Save Row Column) => sub {
     my $self = shift;
 
     unless ($self->range) {

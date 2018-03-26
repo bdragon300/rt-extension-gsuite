@@ -72,7 +72,7 @@ X-Spreadsheet-Id: a8fdc205a9f19cc1c7507a60c4f01b13d11d7fd0a
     );
     $range1->values(\@to_write);  # Set 'values' property
 
-    $range1->Put(1);  # Write data. 1 means reload object with new values (formulas will be calculated)
+    $range1->Save(1);  # Write data. 1 means reload object with new values (formulas will be calculated)
 
     $Ticket->Comment(Content => 'Formula results: ' . join(',', $range1->Row(1)));
     $Ticket->Comment(Content => 'Number results: ' . join(',', $range1->Row(2)));
